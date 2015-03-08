@@ -18,7 +18,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.widget.ListView;
 
 import com.robotpajamas.android.ble113_ota.R;
-import com.robotpajamas.android.ble113_ota.bt.BLEService;
+import com.robotpajamas.android.ble113_ota.Blueteeth.BLEService;
 
 import java.util.ArrayList;
 

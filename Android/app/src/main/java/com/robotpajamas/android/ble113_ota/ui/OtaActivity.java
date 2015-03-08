@@ -18,7 +18,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.robotpajamas.android.ble113_ota.R;
-import com.robotpajamas.android.ble113_ota.bt.BLEService;
+import com.robotpajamas.android.ble113_ota.Blueteeth.BLEService;
 import com.robotpajamas.android.ble113_ota.utils.DataChunker;
 
 import java.io.BufferedInputStream;
@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.UUID;
 
 import butterknife.ButterKnife;
