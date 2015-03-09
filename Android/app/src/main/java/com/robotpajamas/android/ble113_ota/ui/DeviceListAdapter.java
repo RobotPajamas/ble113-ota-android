@@ -8,9 +8,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.robotpajamas.android.ble113_ota.Blueteeth.BlueteethDevice;
 import com.robotpajamas.android.ble113_ota.R;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -21,21 +21,21 @@ import butterknife.InjectView;
 public class DeviceListAdapter extends BaseAdapter {
 
     private final LayoutInflater mLayoutInflater;
-    private List<BluetoothDevice> mDevices;
-    private Comparator<BluetoothDevice> mComparator = (lhs, rhs) -> lhs.getAddress().compareTo(rhs.getAddress());
+    private List<BlueteethDevice> mDevices;
+    private Comparator<BlueteethDevice> mComparator = (lhs, rhs) -> lhs.bluetoothDevice.getAddress().compareTo(rhs.bluetoothDevice.getAddress());
 
-    public DeviceListAdapter(Context context, ArrayList<BluetoothDevice> deviceList) {
+    public DeviceListAdapter(Context context, List<BlueteethDevice> deviceList) {
         mLayoutInflater = LayoutInflater.from(context);
         mDevices = deviceList;
     }
 
-    public void setItems(List<BluetoothDevice> devices) {
+    public void setItems(List<BlueteethDevice> devices) {
         mDevices = devices;
         Collections.sort(mDevices, mComparator);
         notifyDataSetChanged();
     }
 
-    public List<BluetoothDevice> getItems() {
+    public List<BlueteethDevice> getItems() {
         return mDevices;
     }
 
@@ -50,7 +50,7 @@ public class DeviceListAdapter extends BaseAdapter {
     }
 
     @Override
-    public BluetoothDevice getItem(int position) {
+    public BlueteethDevice getItem(int position) {
         return mDevices.get(position);
     }
 
@@ -66,7 +66,7 @@ public class DeviceListAdapter extends BaseAdapter {
             holder = (DeviceItemHolder) convertView.getTag();
         }
 
-        BluetoothDevice device = getItem(position);
+        BluetoothDevice device = getItem(position).bluetoothDevice;
         String name = device.getName();
         if (name == null || name.isEmpty()) {
             name = "[No advertised name]";

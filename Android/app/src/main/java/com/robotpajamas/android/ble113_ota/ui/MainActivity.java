@@ -2,25 +2,20 @@ package com.robotpajamas.android.ble113_ota.ui;
 
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.widget.ListView;
 
+import com.robotpajamas.android.ble113_ota.Blueteeth.BlueteethDevice;
+import com.robotpajamas.android.ble113_ota.Blueteeth.BlueteethManager;
 import com.robotpajamas.android.ble113_ota.R;
-import com.robotpajamas.android.ble113_ota.Blueteeth.BLEService;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -28,16 +23,18 @@ import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 import timber.log.Timber;
 
+//import com.robotpajamas.android.ble113_ota.Blueteeth.BLEService;
+
 
 public class MainActivity extends ActionBarActivity {
 
     private static final int REQ_BLUETOOTH_ENABLE = 1000;
 
-    private BLEService mBLEService;
+    //    private BLEService mBLEService;
     private boolean mBound = false;
 
     private IntentFilter mIntentFilter;
-    private ArrayList<BluetoothDevice> mDeviceList = new ArrayList<>();
+    private List<BlueteethDevice> mDeviceList = new ArrayList<>();
     private DeviceListAdapter mDeviceListAdapter;
 
     private ProgressDialog mProgressDialog;
@@ -65,10 +62,23 @@ public class MainActivity extends ActionBarActivity {
         mDeviceListAdapter.setItems(mDeviceList);
         mDeviceListView.setAdapter(mDeviceListAdapter);
 
-        mDeviceListView.setOnItemClickListener((parent, view1, position, id) -> {
-            mProgressDialog.show();
-            mBLEService.connect(mDeviceListAdapter.getItem(position));
-        });
+        mSwipeLayout.setOnRefreshListener(() -> BlueteethManager.getInstance().scanForDevices(bleDevices -> {
+            mSwipeLayout.setRefreshing(false);
+            mDeviceListAdapter.setItems(bleDevices);
+        }));
+
+        mDeviceListView.setOnItemClickListener((parent, view1, position, id) ->
+
+                {
+                    mProgressDialog.show();
+                    BlueteethDevice device = mDeviceListAdapter.getItem(position);
+                    device.connect(() -> {
+                        final Intent connectedIntent = new Intent(MainActivity.this, OtaActivity.class);
+                        startActivity(connectedIntent);
+                    });
+                }
+
+        );
     }
 
     private void checkBluetoothSupport() {
@@ -104,32 +114,29 @@ public class MainActivity extends ActionBarActivity {
 
     private void connectToBLEService() {
         // Bind this service as early as possible
-        Intent intent = new Intent(this, BLEService.class);
-        mBound = bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+//        Intent intent = new Intent(this, BLEService.class);
+//        mBound = bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        IntentFilter filter = new IntentFilter(getIntentFilter());
-        LocalBroadcastManager.getInstance(this).registerReceiver(mBLEReceiver, filter);
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBLEReceiver);
+//        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBLEReceiver);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        if (mBound) {
-            unbindService(mConnection);
-        }
+//        if (mBound) {
+//            unbindService(mConnection);
+//        }
     }
 
     @Override
@@ -141,85 +148,27 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private ServiceConnection mConnection = new ServiceConnection() {
+//    private ServiceConnection mConnection = new ServiceConnection() {
+//
+//        @Override
+//        public void onServiceConnected(ComponentName className,
+//                                       IBinder binder) {
+//            BLEService.BLEBinder b = (BLEService.BLEBinder) binder;
+//            mBLEService = b.getService();
+//            if (!mBLEService.initialize()) {
+//                exitApp("Could not initialize Bluetooth...");
+//            } else {
+//                // Setup the swipe down to scan for devices, and kick off an initial scan
+//                mSwipeLayout.setOnRefreshListener(mBLEService::beginScan);
+//                mBLEService.beginScan();
+//            }
+//
+//        }
+//
+//        @Override
+//        public void onServiceDisconnected(ComponentName className) {
+//            mBLEService = null;
+//        }
+//    };
 
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder binder) {
-            BLEService.BLEBinder b = (BLEService.BLEBinder) binder;
-            mBLEService = b.getService();
-            if (!mBLEService.initialize()) {
-                exitApp("Could not initialize Bluetooth...");
-            } else {
-                // Setup the swipe down to scan for devices, and kick off an initial scan
-                mSwipeLayout.setOnRefreshListener(mBLEService::beginScan);
-                mBLEService.beginScan();
-            }
-
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName className) {
-            mBLEService = null;
-        }
-    };
-
-    private IntentFilter getIntentFilter() {
-        if (mIntentFilter == null) {
-            mIntentFilter = new IntentFilter();
-            mIntentFilter.addAction(BLEService.ACTION_BEGIN_SCAN);
-            mIntentFilter.addAction(BLEService.ACTION_END_SCAN);
-            mIntentFilter.addAction(BLEService.ACTION_DEVICE_DISCOVERED);
-            mIntentFilter.addAction(BLEService.ACTION_GATT_CONNECTED);
-            mIntentFilter.addAction(BLEService.ACTION_GATT_DISCONNECTED);
-            mIntentFilter.addAction(BLEService.ACTION_GATT_SERVICES_DISCOVERED);
-            mIntentFilter.addAction(BLEService.ACTION_GATT_CONNECTION_STATE_ERROR);
-        }
-        return mIntentFilter;
-    }
-
-
-    private final BroadcastReceiver mBLEReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-
-            switch (action) {
-                case BLEService.ACTION_DEVICE_DISCOVERED:
-                    // Add discovered devices to the list
-                    BluetoothDevice bluetoothDevice = intent.getParcelableExtra(BLEService.DISCOVERED_DEVICE);
-                    mDeviceList.add(bluetoothDevice);
-                    mDeviceListAdapter.setItems(mDeviceList);
-                    break;
-
-                case BLEService.ACTION_BEGIN_SCAN:
-                    // Make list not clickable during scan
-                    mDeviceListView.setEnabled(false);
-                    mDeviceList.clear();
-                    break;
-
-                case BLEService.ACTION_END_SCAN:
-                    // Re-enable UI
-                    mDeviceListView.setEnabled(true);
-                    mSwipeLayout.setRefreshing(false);
-                    break;
-
-                case BLEService.ACTION_GATT_CONNECTED:
-                    // Click to connect, then show it's connected
-                    Timber.d("Connected. Dismiss progress dialog...");
-                    mProgressDialog.dismiss();
-
-                    // Start the OTA activity
-                    final Intent connectedIntent = new Intent(MainActivity.this, OtaActivity.class);
-                    startActivity(connectedIntent);
-                    break;
-
-                case BLEService.ACTION_GATT_CONNECTION_STATE_ERROR:
-                    Timber.d("Connection Error. Dismiss progress dialog...");
-                    mProgressDialog.dismiss();
-                    break;
-            }
-        }
-    };
 }

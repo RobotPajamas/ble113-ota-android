@@ -18,8 +18,8 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <service
-            android:name=".Blueteeth.BLEService"
-            android:label="@string/service_name"></service>
+            android:name=".Blueteeth.BlueteethManager$BLEService"
+            android:label="@string/service_name"/>
 
         <activity
             android:name=".ui.MainActivity"
