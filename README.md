@@ -1,7 +1,8 @@
 # ble113-ota-android
 Firmware and Android code to have Over-The-Air updates to the BLE113 (or any Bluegiga Bluetooth device)
 
-COMING SOON...
+Please refer to http://www.sureshjoshi.com/embedded/ble113-ota-over-the-air-programming/ for a quick summary.
+
 
 License
 -------
