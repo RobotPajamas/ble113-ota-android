@@ -3,8 +3,6 @@ Firmware and Android code to have Over-The-Air updates to the BLE113 (or any Blu
 
 Please refer to http://www.sureshjoshi.com/embedded/ble113-ota-over-the-air-programming/ for a quick summary.
 
-Note: Undergoing offline changes while incorporating Blueteeth library - due to Android device firmware problems. Don't want to commit these changes, as they'll only serve to confuse.
-
 License
 -------
 
