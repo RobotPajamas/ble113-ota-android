@@ -1,4 +1,9 @@
-*.hex
-Firmware/attributes.txt
-Firmware/variable_memory_usage.txt
-
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
+/captures
+blueteeth-sample.iml
+blueteeth.iml
