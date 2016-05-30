@@ -39,7 +39,7 @@
         <characteristic uuid="2A26">
             <description>Firmware Revision String</description>
             <properties read="true" const="true" />
-            <value>0.1.1</value>
+            <value>0.1.0</value>
         </characteristic>
 
         <characteristic uuid="2A28">
