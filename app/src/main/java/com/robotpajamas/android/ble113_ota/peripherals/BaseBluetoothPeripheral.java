@@ -1,7 +1,9 @@
 package com.robotpajamas.android.ble113_ota.peripherals;
 
 import com.robotpajamas.blueteeth.BlueteethDevice;
+import com.robotpajamas.blueteeth.BlueteethUtils;
 import com.robotpajamas.blueteeth.listeners.OnBondingChangedListener;
+import com.robotpajamas.blueteeth.listeners.OnCharacteristicReadListener;
 import com.robotpajamas.blueteeth.listeners.OnConnectionChangedListener;
 
 import java.util.UUID;
@@ -87,6 +89,13 @@ public class BaseBluetoothPeripheral {
      */
     public void close() {
         mPeripheral.close();
+    }
+
+    /**
+     * Reads the firmware version
+     */
+    public void readFirmwareVersion(OnCharacteristicReadListener onCharacteristicReadListener) {
+        BlueteethUtils.read(CHARACTERISTIC_FIRMWARE_VERSION, SERVICE_DEVICE_INFORMATION, mPeripheral, onCharacteristicReadListener);
     }
 }
 

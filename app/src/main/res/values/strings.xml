@@ -5,17 +5,12 @@
     <string name="progress_connecting">Connecting…</string>
     <string name="title_activity_ota">OtaActivity</string>
 
-    <string name="button_upload">Upload Firmware</string>
-    <string name="spinner_description">Only .ota files sitting in the Downloads directory will be displayed in the
-    spinner above. A simple way to transfer them there is to send the files to your Android device through GMail, save
-    the file, and it will be saved to the Downloads directory by default.
-    </string>
-    <string name="device_name">Device Name:</string>
-    <string name="firmware_version">Firmware Version:</string>
+    <string name="button_upload_010">Upload Firmware 0.1.0</string>
+    <string name="button_upload_011">Upload Firmware 0.1.1</string>
 
-    <string name="no_file_selected">No OTA file selected</string>
-    <string name="file_not_found">File not found</string>
-    <string name="io_exception">IO exception</string>
+    <string name="device_name">Device Name:</string>
+    <string name="firmware_version">Firmware Version: %s</string>
+
     <string name="swipe_to_start_scanning">Swipe to start scanning</string>
     <string name="extra_mac_address">com.robotpajamas.android.ble113_ota.mac_address</string>
 </resources>

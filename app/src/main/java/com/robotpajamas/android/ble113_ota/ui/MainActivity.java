@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -75,16 +74,14 @@ public class MainActivity extends ListActivity {
         // Clear existing devices (assumes none are connected)
         Timber.d("Start scanning");
         mDeviceAdapter.clear();
-        BlueteethManager.with(this).scanForPeripherals(DEVICE_SCAN_MILLISECONDS, bleDevices -> {
-            Timber.d("On Scan completed");
-            mSwipeRefresh.setRefreshing(false);
-            for (BlueteethDevice device : bleDevices) {
-                if (!TextUtils.isEmpty(device.getBluetoothDevice().getName())) {
-                    Timber.d("%s - %s", device.getName(), device.getMacAddress());
-                    mDeviceAdapter.add(device);
-                }
-            }
-        });
+        BlueteethManager.with(this).scanForPeripherals(DEVICE_SCAN_MILLISECONDS,
+                blueteethDevice -> {
+                    Timber.d("%s - %s", blueteethDevice.getName(), blueteethDevice.getMacAddress());
+                    mDeviceAdapter.add(blueteethDevice);
+                }, blueteethDevices -> {
+                    Timber.d("On Scan completed");
+                    mSwipeRefresh.setRefreshing(false);
+                });
     }
 
     private void stopScanning() {
